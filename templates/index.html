@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Bloomora - Smart Task Management</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        /* ==================================================
+           SIMPLE GREEN LOGIN / SIGNUP UI
+           ================================================== */
+
+        .auth-screen {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 30px;
+            box-sizing: border-box;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    #e4f1df,
+                    transparent 40%
+                ),
+                radial-gradient(
+                    circle at bottom right,
+                    #dcebd7,
+                    transparent 40%
+                ),
+                #f5f8f3;
+        }
+
+
+        .auth-card {
+            width: 1050px;
+            max-width: 96vw;
+            min-height: 620px;
+
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+
+            background: #ffffff;
+
+            border-radius: 28px;
+            overflow: hidden;
+
+            border: 1px solid #dce8d8;
+
+            box-shadow:
+                0 25px 70px rgba(49, 83, 48, 0.12);
+        }
+
+
+        /* ==================================================
+           LEFT GREEN PANEL
+           ================================================== */
+
+        .auth-visual {
+            position: relative;
+
+            padding: 55px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #dcebd7,
+                    #cfe3c9
+                );
+        }
+
+
+        .auth-visual::before {
+            content: "";
+
+            position: absolute;
+
+            width: 300px;
+            height: 300px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.25);
+
+            top: -120px;
+            left: -120px;
+        }
+
+
+        .auth-visual::after {
+            content: "";
+
+            position: absolute;
+
+            width: 260px;
+            height: 260px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.2);
+
+            right: -110px;
+            bottom: -110px;
+        }
+
+
+        /* ==================================================
+           BRAND
+           ================================================== */
+
+        .auth-brand {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+
+            gap: 14px;
+
+            margin-bottom: 60px;
+        }
+
+
+        .auth-brand-icon {
+            width: 55px;
+            height: 55px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 17px;
+
+            background: #ffffff;
+
+            color: #5f8d57;
+
+            font-size: 25px;
+
+            box-shadow:
+                0 10px 25px rgba(58, 91, 55, 0.10);
+        }
+
+
+        .auth-brand h1 {
+            margin: 0;
+
+            color: #29462d;
+
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+
+        .auth-brand span {
+            display: block;
+
+            margin-top: 4px;
+
+            color: #6d856b;
+
+            font-size: 10px;
+
+            letter-spacing: 1.8px;
+
+            text-transform: uppercase;
+        }
+
+
+        /* ==================================================
+           LEFT CONTENT
+           ================================================== */
+
+        .plant-copy {
+            position: relative;
+            z-index: 2;
+        }
+
+
+        .plant-copy h2 {
+            margin: 0;
+
+            color: #29432c;
+
+            font-size: 43px;
+
+            line-height: 1.1;
+
+            letter-spacing: -1px;
+        }
+
+
+        .plant-copy h2 em {
+            color: #5f8c57;
+
+            font-family: Georgia, serif;
+
+            font-weight: normal;
+        }
+
+
+        .plant-copy p {
+            max-width: 390px;
+
+            margin-top: 22px;
+
+            color: #627762;
+
+            font-size: 14px;
+
+            line-height: 1.75;
+        }
+
+
+        /* ==================================================
+           SIMPLE DECORATION
+           ================================================== */
+
+        .green-decoration {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+
+            gap: 9px;
+
+            margin-top: 55px;
+        }
+
+
+        .green-dot {
+            width: 9px;
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: #6f9b66;
+        }
+
+
+        .green-dot:nth-child(2) {
+            width: 12px;
+            height: 12px;
+
+            background: #82a978;
+        }
+
+
+        .green-dot:nth-child(3) {
+            width: 7px;
+            height: 7px;
+
+            background: #a1be98;
+        }
+
+
+        .green-line {
+            width: 75px;
+            height: 1px;
+
+            background: rgba(79, 119, 72, 0.35);
+        }
+
+
+        .green-caption {
+            position: relative;
+            z-index: 2;
+
+            margin-top: 18px;
+
+            color: #6c8269;
+
+            font-size: 12px;
+
+            letter-spacing: 0.4px;
+        }
+
+
+        /* ==================================================
+           RIGHT FORM PANEL
+           ================================================== */
+
+        .auth-form-panel {
+            background: #ffffff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 55px;
+        }
+
+
+        .auth-form {
+            width: 100%;
+            max-width: 410px;
+        }
+
+
+        .auth-form h2 {
+            margin: 0 0 8px;
+
+            color: #2d3e2d;
+
+            font-size: 30px;
+        }
+
+
+        .auth-subtitle {
+            margin: 0 0 32px;
+
+            color: #899689;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+
+        /* ==================================================
+           FORM
+           ================================================== */
+
+        .auth-group {
+            margin-bottom: 19px;
+        }
+
+
+        .auth-group label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #455443;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        .auth-group input {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 14px 15px;
+
+            border: 1px solid #d8e2d5;
+
+            border-radius: 12px;
+
+            background: #fbfdfb;
+
+            color: #354535;
+
+            outline: none;
+
+            font-size: 14px;
+
+            transition: 0.2s;
+        }
+
+
+        .auth-group input::placeholder {
+            color: #a5afa3;
+        }
+
+
+        .auth-group input:focus {
+            border-color: #78a46d;
+
+            background: #ffffff;
+
+            box-shadow:
+                0 0 0 3px rgba(120, 164, 109, 0.12);
+        }
+
+
+        /* ==================================================
+           BUTTON
+           ================================================== */
+
+        .auth-button {
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #719b66,
+                    #5d8954
+                );
+
+            color: #ffffff;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 20px rgba(76, 119, 70, 0.18);
+
+            transition: 0.2s;
+        }
+
+
+        .auth-button:hover {
+            transform: translateY(-1px);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #668f5d,
+                    #547d4d
+                );
+        }
+
+
+        /* ==================================================
+           SWITCH
+           ================================================== */
+
+        .auth-switch {
+            margin-top: 26px;
+
+            text-align: center;
+
+            color: #929b91;
+
+            font-size: 13px;
+        }
+
+
+        .auth-switch button {
+            margin-left: 3px;
+
+            padding: 0;
+
+            border: none;
+
+            background: transparent;
+
+            color: #5d8954;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        .auth-switch button:hover {
+            text-decoration: underline;
+        }
+
+
+        .auth-message {
+            min-height: 18px;
+
+            margin-top: 12px;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+
+        /* ==================================================
+           PASSWORD RULES
+           ================================================== */
+
+        .password-rules {
+            margin-top: 8px;
+            margin-bottom: 14px;
+
+            font-size: 12px;
+        }
+
+
+        .password-rules p,
+        .password-match {
+            margin: 4px 0;
+
+            color: #9aa39a;
+
+            transition: 0.2s ease;
+        }
+
+
+        .password-rules p.valid,
+        .password-match.valid {
+            color: #5c9460;
+
+            font-weight: 600;
+        }
+
+
+        /* ==================================================
+           HIDDEN
+           ================================================== */
+
+        .hidden {
+            display: none !important;
+        }
+
+
+        /* ==================================================
+           MOBILE
+           ================================================== */
+
+        @media (max-width: 800px) {
+
+            .auth-screen {
+                padding: 15px;
+            }
+
+
+            .auth-card {
+                grid-template-columns: 1fr;
+
+                max-width: 470px;
+
+                min-height: auto;
+            }
+
+
+            .auth-visual {
+                min-height: 380px;
+
+                padding: 40px;
+            }
+
+
+            .auth-brand {
+                margin-bottom: 45px;
+            }
+
+
+            .plant-copy h2 {
+                font-size: 36px;
+            }
+
+
+            .auth-form-panel {
+                padding: 40px 30px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==================================================
+     LOGIN / SIGNUP SCREEN
+================================================== -->
+
+<div id="authScreen" class="auth-screen">
+
+    <div class="auth-card">
+
+
+        <!-- ==================================================
+             LEFT GREEN SIDE
+        ================================================== -->
+
+        <div class="auth-visual">
+
+
+            <div class="auth-brand">
+
+                <div class="auth-brand-icon">
+                    ✿
+                </div>
+
+                <div>
+
+                    <h1>
+                        Bloomora
+                    </h1>
+
+                    <span>
+                        Smart Task Management
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="plant-copy">
+
+                <h2>
+                    Grow your<br>
+                    <em>productivity.</em>
+                </h2>
+
+                <p>
+                    Organize your tasks, focus on what matters
+                    and make steady progress every day.
+                    Your workspace, your goals, your growth.
+                </p>
+
+            </div>
+
+
+            <div class="green-decoration">
+
+                <div class="green-dot"></div>
+
+                <div class="green-line"></div>
+
+                <div class="green-dot"></div>
+
+                <div class="green-dot"></div>
+
+            </div>
+
+
+            <div class="green-caption">
+                Small steps. Meaningful progress.
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             RIGHT LOGIN / SIGNUP
+        ================================================== -->
+
+        <div class="auth-form-panel">
+
+            <div class="auth-form">
+
+
+                <!-- ==================================================
+                     LOGIN
+                ================================================== -->
+
+                <div id="loginPage">
+
+                    <h2>
+                        Welcome back 👋
+                    </h2>
+
+                    <p class="auth-subtitle">
+                        Login to continue to your personal workspace.
+                    </p>
+
+
+                    <div class="auth-group">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                            id="loginEmail"
+                            type="email"
+                            placeholder="Enter your email"
+                        >
+
+                    </div>
+
+
+                    <div class="auth-group">
+
+                        <label>
+                            Password
+                        </label>
+
+                        <input
+                            id="loginPassword"
+                            type="password"
+                            placeholder="Enter your password"
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="auth-button"
+                        onclick="loginUser()"
+                    >
+                        Login to Bloomora
+                    </button>
+
+
+                    <div
+                        id="loginMessage"
+                        class="auth-message">
+                    </div>
+
+
+                    <div class="auth-switch">
+
+                        Don't have an account?
+
+                        <button
+                            type="button"
+                            onclick="showSignup()"
+                        >
+                            Create one
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ==================================================
+                     SIGNUP
+                ================================================== -->
+
+                <div
+                    id="signupPage"
+                    class="hidden"
+                >
+
+                    <h2>
+                        Create your account ✨
+                    </h2>
+
+                    <p class="auth-subtitle">
+                        Start growing your productivity with Bloomora.
+                    </p>
+
+
+                    <div class="auth-group">
+
+                        <label>
+                            Name
+                        </label>
+
+                        <input
+                            id="signupName"
+                            type="text"
+                            placeholder="Enter your name"
+                        >
+
+                    </div>
+
+
+                    <div class="auth-group">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                            id="signupEmail"
+                            type="email"
+                            placeholder="Enter your email"
+                        >
+
+                    </div>
+
+
+                    <div class="auth-group">
+
+                        <label>
+                            Password
+                        </label>
+
+                        <input
+                            id="signupPassword"
+                            type="password"
+                            placeholder="Create a password"
+                        >
+
+                        <div class="password-rules">
+
+                            <p id="lengthRule">
+                                ○ At least 8 characters
+                            </p>
+
+                            <p id="uppercaseRule">
+                                ○ At least 1 uppercase letter
+                            </p>
+
+                            <p id="lowercaseRule">
+                                ○ At least 1 lowercase letter
+                            </p>
+
+                            <p id="symbolRule">
+                                ○ At least 1 special symbol
+                            </p>
+
+                            <p
+                                id="passwordMatchRule"
+                                class="password-match"
+                            >
+                                ○ Passwords must match
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="auth-group">
+
+                        <label>
+                            Confirm Password
+                        </label>
+
+                        <input
+                            id="signupConfirmPassword"
+                            type="password"
+                            placeholder="Enter password again"
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="auth-button"
+                        onclick="createAccount()"
+                    >
+                        Create My Bloomora Account
+                    </button>
+
+
+                    <div
+                        id="signupMessage"
+                        class="auth-message">
+                    </div>
+
+
+                    <div class="auth-switch">
+
+                        Already have an account?
+
+                        <button
+                            type="button"
+                            onclick="showLogin()"
+                        >
+                            Login
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ==================================================
+     MAIN TASK MANAGEMENT APPLICATION
+     BAAKI SAB SAME
+================================================== -->
+
+<div
+    id="mainApp"
+    class="app hidden"
+>
+
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                ✿
+            </div>
+
+            <div>
+
+                <h2>
+                    Bloomora
+                </h2>
+
+                <span>
+                    Smart Task Manager
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="theme-switcher">
+
+            <span>
+                ☀️
+            </span>
+
+            <button
+                id="themeToggle"
+                type="button"
+                onclick="toggleTheme()"
+            >
+
+                <span class="toggle-circle"></span>
+
+            </button>
+
+            <span>
+                🌙
+            </span>
+
+        </div>
+
+
+        <nav>
+
+            <p class="menu-title">
+                MENU
+            </p>
+
+
+            <button
+                type="button"
+                class="nav-item active"
+                onclick="showSection('dashboard')"
+            >
+
+                <span>
+                    ⌂
+                </span>
+
+                Dashboard
+
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-item"
+                onclick="showSection('tasks')"
+            >
+
+                <span>
+                    ✓
+                </span>
+
+                My Tasks
+
+            </button>
+
+
+            <button
+                type="button"
+                class="nav-item"
+                onclick="showSection('smart')"
+            >
+
+                <span>
+                    ✦
+                </span>
+
+                Smart Suggestions
+
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="mini-card">
+
+                <span>
+                    🌱
+                </span>
+
+                <div>
+
+                    <strong>
+                        Keep growing!
+                    </strong>
+
+                    <small>
+                        Small steps matter.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="secondary-btn"
+                onclick="logoutUser()"
+                style="width:100%; margin-top:12px;"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+
+        <header class="topbar">
+
+            <div>
+
+                <span class="welcome-small">
+                    YOUR PERSONAL WORKSPACE
+                </span>
+
+                <h1 id="pageTitle">
+                    Hello 👋
+                </h1>
+
+            </div>
+
+
+            <div class="profile">
+
+                <div
+                    class="profile-avatar"
+                    id="profileAvatar"
+                >
+                    U
+                </div>
+
+                <div>
+
+                    <strong id="profileName">
+                        My Workspace
+                    </strong>
+
+                    <small>
+                        Task Manager
+                    </small>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- DASHBOARD -->
+
+        <section
+            id="dashboard"
+            class="section"
+        >
+
+            <div class="hero">
+
+                <div>
+
+                    <span class="hero-label">
+                        TODAY'S FOCUS ✦
+                    </span>
+
+                    <h2>
+                        Make progress,<br>
+                        <em>one task at a time.</em>
+                    </h2>
+
+                    <p>
+                        Organize your day, track your progress
+                        and stay productive.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    onclick="openTaskModal()"
+                >
+                    + Add New Task
+                </button>
+
+            </div>
+
+
+
+            <div class="stats">
+
+                <div class="stat-card purple">
+
+                    <div class="stat-top">
+
+                        <span>
+                            Total Tasks
+                        </span>
+
+                        <div class="stat-icon">
+                            ▦
+                        </div>
+
+                    </div>
+
+                    <h3 id="totalTasks">
+                        0
+                    </h3>
+
+                    <p>
+                        All your tasks
+                    </p>
+
+                </div>
+
+
+                <div class="stat-card yellow">
+
+                    <div class="stat-top">
+
+                        <span>
+                            Pending
+                        </span>
+
+                        <div class="stat-icon">
+                            ◷
+                        </div>
+
+                    </div>
+
+                    <h3 id="pendingTasks">
+                        0
+                    </h3>
+
+                    <p>
+                        Still to complete
+                    </p>
+
+                </div>
+
+
+                <div class="stat-card green">
+
+                    <div class="stat-top">
+
+                        <span>
+                            Completed
+                        </span>
+
+                        <div class="stat-icon">
+                            ✓
+                        </div>
+
+                    </div>
+
+                    <h3 id="completedTasks">
+                        0
+                    </h3>
+
+                    <p>
+                        Great work!
+                    </p>
+
+                </div>
+
+
+                <div class="stat-card pink">
+
+                    <div class="stat-top">
+
+                        <span>
+                            High Priority
+                        </span>
+
+                        <div class="stat-icon">
+                            !
+                        </div>
+
+                    </div>
+
+                    <h3 id="highTasks">
+                        0
+                    </h3>
+
+                    <p>
+                        Needs attention
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="content-card">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            YOUR DAY
+                        </span>
+
+                        <h2>
+                            Recent Tasks
+                        </h2>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="text-btn"
+                        onclick="showSection('tasks')"
+                    >
+                        View all →
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="dashboardTasks"
+                    class="task-list">
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- MY TASKS -->
+
+        <section
+            id="tasks"
+            class="section hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        YOUR WORK
+                    </span>
+
+                    <h2>
+                        My Tasks
+                    </h2>
+
+                    <p class="muted">
+                        Create, manage and track your daily tasks.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    onclick="openTaskModal()"
+                >
+                    + New Task
+                </button>
+
+            </div>
+
+
+            <div class="toolbar">
+
+                <div class="search-box">
+
+                    🔍
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search tasks..."
+                        oninput="renderTasks()"
+                    >
+
+                </div>
+
+
+                <select
+                    id="statusFilter"
+                    onchange="renderTasks()"
+                >
+
+                    <option value="all">
+                        All Status
+                    </option>
+
+                    <option value="pending">
+                        Pending
+                    </option>
+
+                    <option value="completed">
+                        Completed
+                    </option>
+
+                </select>
+
+
+                <select
+                    id="priorityFilter"
+                    onchange="renderTasks()"
+                >
+
+                    <option value="all">
+                        All Priorities
+                    </option>
+
+                    <option value="high">
+                        High
+                    </option>
+
+                    <option value="medium">
+                        Medium
+                    </option>
+
+                    <option value="low">
+                        Low
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="content-card">
+
+                <div
+                    id="taskList"
+                    class="task-list">
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- SMART -->
+
+        <section
+            id="smart"
+            class="section hidden"
+        >
+
+            <div class="smart-header">
+
+                <div>
+
+                    <span class="section-label">
+                        SMART ASSISTANT ✦
+                    </span>
+
+                    <h2>
+                        Smart Suggestions
+                    </h2>
+
+                    <p>
+                        Get helpful suggestions based on
+                        your current tasks.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="smart-box">
+
+                <div class="smart-icon">
+                    ✦
+                </div>
+
+                <h3>
+                    Let Bloomora help you plan
+                </h3>
+
+                <p>
+                    Bloomora looks at your pending tasks,
+                    priorities and deadlines to help you
+                    decide what deserves your attention first.
+                </p>
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    onclick="generateSuggestions()"
+                >
+                    Generate Suggestions
+                </button>
+
+            </div>
+
+
+            <div
+                id="suggestions"
+                class="suggestions">
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+
+<!-- ==================================================
+     TASK MODAL
+================================================== -->
+
+<div
+    id="taskModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="section-label">
+                    TASK DETAILS
+                </span>
+
+                <h2 id="modalTitle">
+                    Create a Task
+                </h2>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closeTaskModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <label>
+            Task title
+        </label>
+
+        <input
+            id="taskTitle"
+            type="text"
+            placeholder="e.g. Complete project report"
+        >
+
+
+        <label>
+            Description
+        </label>
+
+        <textarea
+            id="taskDescription"
+            placeholder="Add some details..."
+        ></textarea>
+
+
+        <div class="form-row">
+
+            <div>
+
+                <label>
+                    Priority
+                </label>
+
+                <select id="taskPriority">
+
+                    <option value="low">
+                        Low
+                    </option>
+
+                    <option
+                        value="medium"
+                        selected
+                    >
+                        Medium
+                    </option>
+
+                    <option value="high">
+                        High
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    Due date
+                </label>
+
+                <input
+                    id="taskDueDate"
+                    type="date"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="secondary-btn"
+                onclick="closeTaskModal()"
+            >
+                Cancel
+            </button>
+
+
+            <button
+                type="button"
+                class="primary-btn"
+                onclick="saveTask()"
+            >
+                Save Task
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script
+    src="{{ url_for('static', filename='script.js') }}"
+></script>
+
+
+</body>
+
+</html>
