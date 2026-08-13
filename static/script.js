@@ -1,5 +1,5 @@
 /* ==================================================
-   TASKBLOOM
+   BLOOMORA
    FRONTEND JAVASCRIPT
    Flask + SQLite Backend
 ================================================== */
@@ -10,7 +10,6 @@
 ================================================== */
 
 let tasks = [];
-
 let editingId = null;
 
 
@@ -19,7 +18,84 @@ let editingId = null;
 ================================================== */
 
 
-/* ================= SHOW SIGNUP ================= */
+/* ==================================================
+   CLEAR AUTH FORM
+   Prevent old values from appearing when switching
+   between Login and Signup.
+================================================== */
+
+function clearLoginForm() {
+
+    const email =
+        document.getElementById("loginEmail");
+
+    const password =
+        document.getElementById("loginPassword");
+
+    const message =
+        document.getElementById("loginMessage");
+
+
+    if (email) {
+        email.value = "";
+    }
+
+    if (password) {
+        password.value = "";
+    }
+
+    if (message) {
+        message.textContent = "";
+    }
+}
+
+
+function clearSignupForm() {
+
+    const name =
+        document.getElementById("signupName");
+
+    const email =
+        document.getElementById("signupEmail");
+
+    const password =
+        document.getElementById("signupPassword");
+
+    const confirmPassword =
+        document.getElementById("signupConfirmPassword");
+
+    const message =
+        document.getElementById("signupMessage");
+
+
+    if (name) {
+        name.value = "";
+    }
+
+    if (email) {
+        email.value = "";
+    }
+
+    if (password) {
+        password.value = "";
+    }
+
+    if (confirmPassword) {
+        confirmPassword.value = "";
+    }
+
+    if (message) {
+        message.textContent = "";
+    }
+
+
+    resetPasswordRules();
+}
+
+
+/* ==================================================
+   SHOW SIGNUP
+================================================== */
 
 function showSignup() {
 
@@ -28,19 +104,42 @@ function showSignup() {
         .classList
         .add("hidden");
 
+
     document
         .getElementById("signupPage")
         .classList
         .remove("hidden");
 
-    document
-        .getElementById("loginMessage")
-        .textContent = "";
+
+    /* Clear old login information */
+
+    clearLoginForm();
+
+
+    /* Clear signup form */
+
+    clearSignupForm();
+
+
+    /* Put cursor in name field */
+
+    setTimeout(function () {
+
+        const nameInput =
+            document.getElementById("signupName");
+
+        if (nameInput) {
+            nameInput.focus();
+        }
+
+    }, 100);
 
 }
 
 
-/* ================= SHOW LOGIN ================= */
+/* ==================================================
+   SHOW LOGIN
+================================================== */
 
 function showLogin() {
 
@@ -49,14 +148,35 @@ function showLogin() {
         .classList
         .add("hidden");
 
+
     document
         .getElementById("loginPage")
         .classList
         .remove("hidden");
 
-    document
-        .getElementById("signupMessage")
-        .textContent = "";
+
+    /* Clear signup information */
+
+    clearSignupForm();
+
+
+    /* Clear login information */
+
+    clearLoginForm();
+
+
+    /* Put cursor in email field */
+
+    setTimeout(function () {
+
+        const emailInput =
+            document.getElementById("loginEmail");
+
+        if (emailInput) {
+            emailInput.focus();
+        }
+
+    }, 100);
 
 }
 
@@ -66,7 +186,6 @@ function showLogin() {
 ================================================== */
 
 async function createAccount() {
-
 
     const name =
         document
@@ -95,12 +214,12 @@ async function createAccount() {
 
 
     const message =
-        document
-            .getElementById("signupMessage");
+        document.getElementById("signupMessage");
 
 
-
-    /* ---------- VALIDATION ---------- */
+    /* ==================================================
+       VALIDATION
+    ================================================== */
 
     if (
         !name ||
@@ -116,31 +235,30 @@ async function createAccount() {
             "#d94b62";
 
         return;
-
     }
 
 
+    /* Email validation */
 
-    if (
-        password !==
-        confirmPassword
-    ) {
+    const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+    if (!emailPattern.test(email)) {
 
         message.textContent =
-            "Passwords do not match.";
+            "Please enter a valid email address.";
 
         message.style.color =
             "#d94b62";
 
         return;
-
     }
 
 
+    /* Password length */
 
-    if (
-        password.length < 8
-    ) {
+    if (password.length < 8) {
 
         message.textContent =
             "Password must be at least 8 characters.";
@@ -149,15 +267,70 @@ async function createAccount() {
             "#d94b62";
 
         return;
-
     }
 
 
+    /* Uppercase */
 
-    /* ---------- SEND TO FLASK ---------- */
+    if (!/[A-Z]/.test(password)) {
+
+        message.textContent =
+            "Password must contain at least 1 uppercase letter.";
+
+        message.style.color =
+            "#d94b62";
+
+        return;
+    }
+
+
+    /* Lowercase */
+
+    if (!/[a-z]/.test(password)) {
+
+        message.textContent =
+            "Password must contain at least 1 lowercase letter.";
+
+        message.style.color =
+            "#d94b62";
+
+        return;
+    }
+
+
+    /* Special symbol */
+
+    if (!/[^A-Za-z0-9]/.test(password)) {
+
+        message.textContent =
+            "Password must contain at least 1 special symbol.";
+
+        message.style.color =
+            "#d94b62";
+
+        return;
+    }
+
+
+    /* Confirm password */
+
+    if (password !== confirmPassword) {
+
+        message.textContent =
+            "Passwords do not match.";
+
+        message.style.color =
+            "#d94b62";
+
+        return;
+    }
+
+
+    /* ==================================================
+       SEND TO FLASK
+    ================================================== */
 
     try {
-
 
         const response =
             await fetch(
@@ -188,13 +361,13 @@ async function createAccount() {
             );
 
 
-
         const data =
             await response.json();
 
 
-
-        /* ---------- ERROR ---------- */
+        /* ==================================================
+           ERROR
+        ================================================== */
 
         if (!response.ok) {
 
@@ -206,12 +379,12 @@ async function createAccount() {
                 "#d94b62";
 
             return;
-
         }
 
 
-
-        /* ---------- SUCCESS ---------- */
+        /* ==================================================
+           SUCCESS
+        ================================================== */
 
         message.textContent =
             "Account created successfully!";
@@ -220,27 +393,34 @@ async function createAccount() {
             "#4b9b72";
 
 
-
         /*
-            Automatically put email
-            into login form.
+           IMPORTANT:
+           Do NOT automatically fill login password.
+           Only switch to login after success.
         */
 
-        document
-            .getElementById("loginEmail")
-            .value =
-            email;
+
+        setTimeout(function () {
+
+            /* Clear everything */
+
+            clearSignupForm();
+
+            clearLoginForm();
 
 
+            /* Show clean login page */
 
-        setTimeout(
-            function () {
+            showLogin();
 
-                showLogin();
 
-            },
-            1000
-        );
+            /*
+               Put email manually only if desired.
+               We are keeping it blank to prevent
+               browser autofill confusion.
+            */
+
+        }, 1000);
 
 
     }
@@ -254,7 +434,6 @@ async function createAccount() {
 
         message.style.color =
             "#d94b62";
-
     }
 
 }
@@ -265,7 +444,6 @@ async function createAccount() {
 ================================================== */
 
 async function loginUser() {
-
 
     const email =
         document
@@ -281,17 +459,14 @@ async function loginUser() {
 
 
     const message =
-        document
-            .getElementById("loginMessage");
+        document.getElementById("loginMessage");
 
 
+    /* ==================================================
+       VALIDATION
+    ================================================== */
 
-    /* ---------- VALIDATION ---------- */
-
-    if (
-        !email ||
-        !password
-    ) {
+    if (!email || !password) {
 
         message.textContent =
             "Please enter email and password.";
@@ -300,15 +475,14 @@ async function loginUser() {
             "#d94b62";
 
         return;
-
     }
 
 
-
-    /* ---------- SEND TO FLASK ---------- */
+    /* ==================================================
+       SEND TO FLASK
+    ================================================== */
 
     try {
-
 
         const response =
             await fetch(
@@ -334,13 +508,13 @@ async function loginUser() {
             );
 
 
-
         const data =
             await response.json();
 
 
-
-        /* ---------- INVALID LOGIN ---------- */
+        /* ==================================================
+           INVALID LOGIN
+        ================================================== */
 
         if (!response.ok) {
 
@@ -352,15 +526,14 @@ async function loginUser() {
                 "#d94b62";
 
             return;
-
         }
 
 
-
-        /* ---------- SUCCESS ---------- */
+        /* ==================================================
+           LOGIN SUCCESS
+        ================================================== */
 
         message.textContent = "";
-
 
 
         openApplication(
@@ -379,7 +552,6 @@ async function loginUser() {
 
         message.style.color =
             "#d94b62";
-
     }
 
 }
@@ -390,7 +562,6 @@ async function loginUser() {
 ================================================== */
 
 async function openApplication(name) {
-
 
     document
         .getElementById("authScreen")
@@ -404,8 +575,9 @@ async function openApplication(name) {
         .remove("hidden");
 
 
-
-    /* ---------- USER NAME ---------- */
+    /* ==================================================
+       USER NAME
+    ================================================== */
 
     document
         .getElementById("profileName")
@@ -413,8 +585,9 @@ async function openApplication(name) {
         name;
 
 
-
-    /* ---------- AVATAR ---------- */
+    /* ==================================================
+       AVATAR
+    ================================================== */
 
     document
         .getElementById("profileAvatar")
@@ -424,18 +597,25 @@ async function openApplication(name) {
             .toUpperCase();
 
 
+    /* ==================================================
+       PAGE TITLE
+    ================================================== */
 
-    /* ---------- PAGE TITLE ---------- */
+    const firstName =
+        name
+            .trim()
+            .split(" ")[0];
 
-    
-    const firstName = name.trim().split(" ")[0];
+
     document
         .getElementById("pageTitle")
         .textContent =
-         `Hello, ${firstName} 👋`;
+        `Hello, ${firstName} 👋`;
 
 
-    /* ---------- LOAD TASKS ---------- */
+    /* ==================================================
+       LOAD TASKS
+    ================================================== */
 
     await loadTasks();
 
@@ -448,13 +628,16 @@ async function openApplication(name) {
 
 async function checkLogin() {
 
-
     try {
-
 
         const response =
             await fetch(
-                "/current-user"
+                "/current-user",
+                {
+                    method: "GET",
+
+                    cache: "no-store"
+                }
             );
 
 
@@ -462,10 +645,7 @@ async function checkLogin() {
             await response.json();
 
 
-
-        if (
-            data.logged_in
-        ) {
+        if (data.logged_in) {
 
             openApplication(
                 data.name
@@ -481,7 +661,6 @@ async function checkLogin() {
             "Login check failed:",
             error
         );
-
     }
 
 }
@@ -493,9 +672,7 @@ async function checkLogin() {
 
 async function logoutUser() {
 
-
     try {
-
 
         await fetch(
             "/logout",
@@ -503,7 +680,6 @@ async function logoutUser() {
                 method: "POST"
             }
         );
-
 
     }
 
@@ -514,8 +690,9 @@ async function logoutUser() {
     }
 
 
-
-    /* ---------- CLEAR UI ---------- */
+    /* ==================================================
+       CLEAR UI
+    ================================================== */
 
     document
         .getElementById("mainApp")
@@ -529,22 +706,14 @@ async function logoutUser() {
         .remove("hidden");
 
 
+    /* Clear both forms */
 
-    document
-        .getElementById("loginEmail")
-        .value = "";
+    clearLoginForm();
 
-
-    document
-        .getElementById("loginPassword")
-        .value = "";
+    clearSignupForm();
 
 
-    document
-        .getElementById("loginMessage")
-        .textContent = "";
-
-
+    /* Show login */
 
     showLogin();
 
@@ -557,25 +726,17 @@ async function logoutUser() {
 
 function showSection(section) {
 
-
     document
         .querySelectorAll(".section")
-        .forEach(
-            function (item) {
+        .forEach(function (item) {
 
-                item.classList.add(
-                    "hidden"
-                );
+            item.classList.add("hidden");
 
-            }
-        );
-
+        });
 
 
     const selectedSection =
-        document.getElementById(
-            section
-        );
+        document.getElementById(section);
 
 
     if (selectedSection) {
@@ -587,21 +748,15 @@ function showSection(section) {
     }
 
 
-
-    /* ---------- REMOVE ACTIVE ---------- */
+    /* Remove active */
 
     document
         .querySelectorAll(".nav-item")
-        .forEach(
-            function (item) {
+        .forEach(function (item) {
 
-                item.classList.remove(
-                    "active"
-                );
+            item.classList.remove("active");
 
-            }
-        );
-
+        });
 
 
     const navItems =
@@ -610,10 +765,20 @@ function showSection(section) {
         );
 
 
-
-    /* ---------- DASHBOARD ---------- */
+    /* ==================================================
+       DASHBOARD
+    ================================================== */
 
     if (section === "dashboard") {
+
+        if (navItems[0]) {
+
+            navItems[0]
+                .classList
+                .add("active");
+
+        }
+
 
         const profileName =
             document
@@ -621,25 +786,24 @@ function showSection(section) {
                 .textContent
                 .trim();
 
+
         const firstName =
-            profileName
-                .split(" ")[0];
+            profileName.split(" ")[0];
 
 
         document
             .getElementById("pageTitle")
             .textContent =
             `Hello, ${firstName} 👋`;
+
     }
 
 
+    /* ==================================================
+       TASKS
+    ================================================== */
 
-    /* ---------- TASKS ---------- */
-
-    if (
-        section ===
-        "tasks"
-    ) {
+    if (section === "tasks") {
 
         if (navItems[1]) {
 
@@ -651,9 +815,7 @@ function showSection(section) {
 
 
         document
-            .getElementById(
-                "pageTitle"
-            )
+            .getElementById("pageTitle")
             .textContent =
             "Manage your tasks";
 
@@ -663,13 +825,11 @@ function showSection(section) {
     }
 
 
+    /* ==================================================
+       SMART
+    ================================================== */
 
-    /* ---------- SMART ---------- */
-
-    if (
-        section ===
-        "smart"
-    ) {
+    if (section === "smart") {
 
         if (navItems[2]) {
 
@@ -681,9 +841,7 @@ function showSection(section) {
 
 
         document
-            .getElementById(
-                "pageTitle"
-            )
+            .getElementById("pageTitle")
             .textContent =
             "Plan smarter ✦";
 
@@ -693,37 +851,33 @@ function showSection(section) {
 
 
 /* ==================================================
-   LOAD TASKS FROM DATABASE
+   LOAD TASKS
 ================================================== */
 
 async function loadTasks() {
 
-
     try {
-
 
         const response =
             await fetch(
-                "/tasks"
+                "/tasks",
+                {
+                    cache: "no-store"
+                }
             );
 
 
-        if (
-            response.status ===
-            401
-        ) {
+        if (response.status === 401) {
 
-            logoutUser();
+            await logoutUser();
 
             return;
 
         }
 
 
-
         tasks =
             await response.json();
-
 
 
         updateDashboard();
@@ -748,37 +902,29 @@ async function loadTasks() {
    OPEN TASK MODAL
 ================================================== */
 
-function openTaskModal(
-    id = null
-) {
-
+function openTaskModal(id = null) {
 
     editingId = id;
 
 
-
     document
-        .getElementById(
-            "taskModal"
-        )
+        .getElementById("taskModal")
         .classList
         .remove("hidden");
 
 
-
-    /* ---------- EDIT TASK ---------- */
+    /* ==================================================
+       EDIT TASK
+    ================================================== */
 
     if (id) {
 
-
         const task =
-            tasks.find(
-                function (t) {
+            tasks.find(function (t) {
 
-                    return t.id === id;
+                return t.id === id;
 
-                }
-            );
+            });
 
 
         if (!task) {
@@ -788,88 +934,68 @@ function openTaskModal(
         }
 
 
-
         document
-            .getElementById(
-                "modalTitle"
-            )
+            .getElementById("modalTitle")
             .textContent =
             "Edit Task";
 
 
         document
-            .getElementById(
-                "taskTitle"
-            )
+            .getElementById("taskTitle")
             .value =
             task.title;
 
 
         document
-            .getElementById(
-                "taskDescription"
-            )
+            .getElementById("taskDescription")
             .value =
             task.description || "";
 
 
         document
-            .getElementById(
-                "taskPriority"
-            )
+            .getElementById("taskPriority")
             .value =
             task.priority;
 
 
         document
-            .getElementById(
-                "taskDueDate"
-            )
+            .getElementById("taskDueDate")
             .value =
             task.dueDate || "";
 
     }
 
 
-    /* ---------- NEW TASK ---------- */
+    /* ==================================================
+       NEW TASK
+    ================================================== */
 
     else {
 
-
         document
-            .getElementById(
-                "modalTitle"
-            )
+            .getElementById("modalTitle")
             .textContent =
             "Create a Task";
 
 
         document
-            .getElementById(
-                "taskTitle"
-            )
+            .getElementById("taskTitle")
             .value = "";
 
 
         document
-            .getElementById(
-                "taskDescription"
-            )
+            .getElementById("taskDescription")
             .value = "";
 
 
         document
-            .getElementById(
-                "taskPriority"
-            )
+            .getElementById("taskPriority")
             .value =
             "medium";
 
 
         document
-            .getElementById(
-                "taskDueDate"
-            )
+            .getElementById("taskDueDate")
             .value = "";
 
     }
@@ -883,11 +1009,8 @@ function openTaskModal(
 
 function closeTaskModal() {
 
-
     document
-        .getElementById(
-            "taskModal"
-        )
+        .getElementById("taskModal")
         .classList
         .add("hidden");
 
@@ -903,43 +1026,33 @@ function closeTaskModal() {
 
 async function saveTask() {
 
-
     const title =
         document
-            .getElementById(
-                "taskTitle"
-            )
+            .getElementById("taskTitle")
             .value
             .trim();
 
 
     const description =
         document
-            .getElementById(
-                "taskDescription"
-            )
+            .getElementById("taskDescription")
             .value
             .trim();
 
 
     const priority =
         document
-            .getElementById(
-                "taskPriority"
-            )
+            .getElementById("taskPriority")
             .value;
 
 
     const dueDate =
         document
-            .getElementById(
-                "taskDueDate"
-            )
+            .getElementById("taskDueDate")
             .value;
 
 
-
-    /* ---------- VALIDATION ---------- */
+    /* Validation */
 
     if (!title) {
 
@@ -952,32 +1065,26 @@ async function saveTask() {
     }
 
 
-
     try {
-
 
         let response;
 
 
-
         /* ==================================================
-           EDIT EXISTING TASK
+           EDIT
         ================================================== */
 
         if (editingId) {
 
-
             const oldTask =
-                tasks.find(
-                    function (task) {
+                tasks.find(function (task) {
 
-                        return (
-                            task.id ===
-                            editingId
-                        );
+                    return (
+                        task.id ===
+                        editingId
+                    );
 
-                    }
-                );
+                });
 
 
             response =
@@ -1022,11 +1129,10 @@ async function saveTask() {
 
 
         /* ==================================================
-           CREATE NEW TASK
+           CREATE
         ================================================== */
 
         else {
-
 
             response =
                 await fetch(
@@ -1063,15 +1169,15 @@ async function saveTask() {
         }
 
 
+        /* ==================================================
+           SERVER ERROR
+        ================================================== */
 
-        /* ---------- SERVER ERROR ---------- */
-
-        if (
-            !response.ok
-        ) {
+        if (!response.ok) {
 
             const errorData =
                 await response.json();
+
 
             alert(
                 errorData.message ||
@@ -1083,13 +1189,11 @@ async function saveTask() {
         }
 
 
-
-        /* ---------- SUCCESS ---------- */
+        /* Success */
 
         closeTaskModal();
 
         await loadTasks();
-
 
     }
 
@@ -1112,7 +1216,6 @@ async function saveTask() {
 
 async function deleteTask(id) {
 
-
     const confirmed =
         confirm(
             "Are you sure you want to delete this task?"
@@ -1126,26 +1229,19 @@ async function deleteTask(id) {
     }
 
 
-
     try {
-
 
         const response =
             await fetch(
                 "/tasks/" +
                 id,
                 {
-
                     method: "DELETE"
-
                 }
             );
 
 
-
-        if (
-            !response.ok
-        ) {
+        if (!response.ok) {
 
             alert(
                 "Unable to delete task."
@@ -1154,7 +1250,6 @@ async function deleteTask(id) {
             return;
 
         }
-
 
 
         await loadTasks();
@@ -1180,15 +1275,12 @@ async function deleteTask(id) {
 
 async function toggleTask(id) {
 
-
     const task =
-        tasks.find(
-            function (t) {
+        tasks.find(function (t) {
 
-                return t.id === id;
+            return t.id === id;
 
-            }
-        );
+        });
 
 
     if (!task) {
@@ -1198,9 +1290,7 @@ async function toggleTask(id) {
     }
 
 
-
     try {
-
 
         const response =
             await fetch(
@@ -1239,10 +1329,7 @@ async function toggleTask(id) {
             );
 
 
-
-        if (
-            !response.ok
-        ) {
+        if (!response.ok) {
 
             alert(
                 "Unable to update task."
@@ -1251,7 +1338,6 @@ async function toggleTask(id) {
             return;
 
         }
-
 
 
         await loadTasks();
@@ -1277,11 +1363,9 @@ async function toggleTask(id) {
 
 function createTaskHTML(task) {
 
-
     return `
 
         <div class="task-item">
-
 
             <button
                 type="button"
@@ -1292,19 +1376,15 @@ function createTaskHTML(task) {
                 }"
                 onclick="toggleTask(${task.id})"
             >
-
                 ${
                     task.completed
                         ? "✓"
                         : ""
                 }
-
             </button>
 
 
-
             <div class="task-info">
-
 
                 <div
                     class="task-title ${
@@ -1313,15 +1393,12 @@ function createTaskHTML(task) {
                             : ""
                     }"
                 >
-
                     ${
                         escapeHTML(
                             task.title
                         )
                     }
-
                 </div>
-
 
 
                 <div class="task-desc">
@@ -1336,47 +1413,34 @@ function createTaskHTML(task) {
                 </div>
 
 
-
                 <div class="task-meta">
-
 
                     <span
                         class="badge ${
                             task.priority
                         }"
                     >
-
                         ${
                             task.priority
                                 .toUpperCase()
                         }
-
                     </span>
-
 
 
                     ${
                         task.dueDate
-
-                        ? `
-
-                            <span class="task-date">
-
-                                Due
-                                ${
-                                    formatDate(
-                                        task.dueDate
-                                    )
-                                }
-
-                            </span>
-
-                          `
-
-                        : ""
-
+                            ? `
+                                <span class="task-date">
+                                    Due
+                                    ${
+                                        formatDate(
+                                            task.dueDate
+                                        )
+                                    }
+                                </span>
+                              `
+                            : ""
                     }
-
 
 
                     <span class="task-date">
@@ -1389,15 +1453,12 @@ function createTaskHTML(task) {
 
                     </span>
 
-
                 </div>
 
             </div>
 
 
-
             <div class="task-actions">
-
 
                 <button
                     type="button"
@@ -1405,11 +1466,8 @@ function createTaskHTML(task) {
                     onclick="openTaskModal(${task.id})"
                     title="Edit"
                 >
-
                     ✎
-
                 </button>
-
 
 
                 <button
@@ -1418,11 +1476,8 @@ function createTaskHTML(task) {
                     onclick="deleteTask(${task.id})"
                     title="Delete"
                 >
-
                     🗑
-
                 </button>
-
 
             </div>
 
@@ -1439,7 +1494,6 @@ function createTaskHTML(task) {
 
 function renderTasks() {
 
-
     const container =
         document.getElementById(
             "taskList"
@@ -1451,7 +1505,6 @@ function renderTasks() {
         return;
 
     }
-
 
 
     const searchElement =
@@ -1470,7 +1523,6 @@ function renderTasks() {
         document.getElementById(
             "priorityFilter"
         );
-
 
 
     const search =
@@ -1493,107 +1545,84 @@ function renderTasks() {
             : "all";
 
 
-
     const filtered =
-        tasks.filter(
-            function (task) {
+        tasks.filter(function (task) {
+
+            const title =
+                (
+                    task.title ||
+                    ""
+                )
+                .toLowerCase();
 
 
-                const title =
-                    (
-                        task.title ||
-                        ""
-                    )
-                    .toLowerCase();
+            const description =
+                (
+                    task.description ||
+                    ""
+                )
+                .toLowerCase();
 
 
-                const description =
-                    (
-                        task.description ||
-                        ""
-                    )
-                    .toLowerCase();
+            const matchesSearch =
+
+                title.includes(search)
+
+                ||
+
+                description.includes(search);
 
 
+            const matchesStatus =
 
-                const matchesSearch =
+                status === "all"
 
-                    title.includes(
-                        search
-                    )
+                ||
 
-                    ||
-
-                    description.includes(
-                        search
-                    );
-
-
-
-                const matchesStatus =
-
-                    status ===
-                    "all"
-
-                    ||
-
-                    (
-                        status ===
-                        "completed"
-
-                        &&
-                        task.completed
-                    )
-
-                    ||
-
-                    (
-                        status ===
-                        "pending"
-
-                        &&
-                        !task.completed
-                    );
-
-
-
-                const matchesPriority =
-
-                    priority ===
-                    "all"
-
-                    ||
-
-                    task.priority ===
-                    priority;
-
-
-
-                return (
-
-                    matchesSearch
-
+                (
+                    status === "completed"
                     &&
+                    task.completed
+                )
 
-                    matchesStatus
+                ||
 
+                (
+                    status === "pending"
                     &&
-
-                    matchesPriority
-
+                    !task.completed
                 );
 
-            }
-        );
+
+            const matchesPriority =
+
+                priority === "all"
+
+                ||
+
+                task.priority === priority;
 
 
+            return (
 
-    /* ---------- EMPTY ---------- */
+                matchesSearch
 
-    if (
-        filtered.length ===
-        0
-    ) {
+                &&
+
+                matchesStatus
+
+                &&
+
+                matchesPriority
+
+            );
+
+        });
+
+
+    /* Empty */
+
+    if (filtered.length === 0) {
 
         container.innerHTML = `
 
@@ -1614,12 +1643,9 @@ function renderTasks() {
     }
 
 
-
     container.innerHTML =
         filtered
-            .map(
-                createTaskHTML
-            )
+            .map(createTaskHTML)
             .join("");
 
 }
@@ -1631,42 +1657,32 @@ function renderTasks() {
 
 function updateDashboard() {
 
-
     const total =
         tasks.length;
 
 
     const completed =
-        tasks.filter(
-            function (task) {
+        tasks.filter(function (task) {
 
-                return task.completed;
+            return task.completed;
 
-            }
-        ).length;
+        }).length;
 
 
     const pending =
-        total -
-        completed;
+        total - completed;
 
 
     const high =
-        tasks.filter(
-            function (task) {
+        tasks.filter(function (task) {
 
-                return (
-                    task.priority ===
-                    "high"
+            return (
+                task.priority === "high"
+                &&
+                !task.completed
+            );
 
-                    &&
-
-                    !task.completed
-                );
-
-            }
-        ).length;
-
+        }).length;
 
 
     const totalElement =
@@ -1693,11 +1709,9 @@ function updateDashboard() {
         );
 
 
-
     if (totalElement) {
 
-        totalElement
-            .textContent =
+        totalElement.textContent =
             total;
 
     }
@@ -1705,8 +1719,7 @@ function updateDashboard() {
 
     if (completedElement) {
 
-        completedElement
-            .textContent =
+        completedElement.textContent =
             completed;
 
     }
@@ -1714,8 +1727,7 @@ function updateDashboard() {
 
     if (pendingElement) {
 
-        pendingElement
-            .textContent =
+        pendingElement.textContent =
             pending;
 
     }
@@ -1723,15 +1735,15 @@ function updateDashboard() {
 
     if (highElement) {
 
-        highElement
-            .textContent =
+        highElement.textContent =
             high;
 
     }
 
 
-
-    /* ---------- RECENT TASKS ---------- */
+    /* ==================================================
+       RECENT TASKS
+    ================================================== */
 
     const dashboardContainer =
         document.getElementById(
@@ -1746,19 +1758,11 @@ function updateDashboard() {
     }
 
 
-
     const recent =
-        tasks.slice(
-            0,
-            5
-        );
+        tasks.slice(0, 5);
 
 
-
-    if (
-        recent.length ===
-        0
-    ) {
+    if (recent.length === 0) {
 
         dashboardContainer.innerHTML = `
 
@@ -1779,12 +1783,9 @@ function updateDashboard() {
     }
 
 
-
     dashboardContainer.innerHTML =
         recent
-            .map(
-                createTaskHTML
-            )
+            .map(createTaskHTML)
             .join("");
 
 }
@@ -1795,7 +1796,6 @@ function updateDashboard() {
 ================================================== */
 
 function generateSuggestions() {
-
 
     const box =
         document.getElementById(
@@ -1810,24 +1810,19 @@ function generateSuggestions() {
     }
 
 
-
     const pending =
-        tasks.filter(
-            function (task) {
+        tasks.filter(function (task) {
 
-                return !task.completed;
+            return !task.completed;
 
-            }
-        );
+        });
 
 
+    /* ==================================================
+       ALL COMPLETE
+    ================================================== */
 
-    /* ---------- ALL COMPLETE ---------- */
-
-    if (
-        pending.length ===
-        0
-    ) {
+    if (pending.length === 0) {
 
         box.innerHTML = `
 
@@ -1854,9 +1849,7 @@ function generateSuggestions() {
     }
 
 
-
     let suggestions = [];
-
 
 
     /* ==================================================
@@ -1864,23 +1857,14 @@ function generateSuggestions() {
     ================================================== */
 
     const highPriority =
-        pending.filter(
-            function (task) {
+        pending.filter(function (task) {
 
-                return (
-                    task.priority ===
-                    "high"
-                );
+            return task.priority === "high";
 
-            }
-        );
+        });
 
 
-
-    if (
-        highPriority.length >
-        0
-    ) {
+    if (highPriority.length > 0) {
 
         suggestions.push(`
 
@@ -1908,49 +1892,33 @@ function generateSuggestions() {
     }
 
 
-
     /* ==================================================
        NEAREST DEADLINE
     ================================================== */
 
     const withDates =
-        pending.filter(
-            function (task) {
+        pending.filter(function (task) {
 
-                return !!task.dueDate;
+            return !!task.dueDate;
 
-            }
-        );
+        });
 
 
+    if (withDates.length > 0) {
 
-    if (
-        withDates.length >
-        0
-    ) {
+        withDates.sort(function (a, b) {
 
+            return (
+                new Date(a.dueDate)
+                -
+                new Date(b.dueDate)
+            );
 
-        withDates.sort(
-            function (a, b) {
-
-                return (
-                    new Date(
-                        a.dueDate
-                    )
-                    -
-                    new Date(
-                        b.dueDate
-                    )
-                );
-
-            }
-        );
-
+        });
 
 
         const earliest =
             withDates[0];
-
 
 
         suggestions.push(`
@@ -1979,29 +1947,19 @@ function generateSuggestions() {
     }
 
 
-
     /* ==================================================
        MEDIUM PRIORITY
     ================================================== */
 
     const medium =
-        pending.filter(
-            function (task) {
+        pending.filter(function (task) {
 
-                return (
-                    task.priority ===
-                    "medium"
-                );
+            return task.priority === "medium";
 
-            }
-        ).length;
+        }).length;
 
 
-
-    if (
-        medium >
-        0
-    ) {
+    if (medium > 0) {
 
         suggestions.push(`
 
@@ -2027,7 +1985,6 @@ function generateSuggestions() {
         `);
 
     }
-
 
 
     /* ==================================================
@@ -2056,7 +2013,6 @@ function generateSuggestions() {
     `);
 
 
-
     box.innerHTML =
         suggestions.join("");
 
@@ -2069,7 +2025,6 @@ function generateSuggestions() {
 
 function formatDate(date) {
 
-
     if (!date) {
 
         return "";
@@ -2077,10 +2032,8 @@ function formatDate(date) {
     }
 
 
-
     const d =
         new Date(date);
-
 
 
     return d.toLocaleDateString(
@@ -2105,7 +2058,6 @@ function formatDate(date) {
 
 function escapeHTML(text) {
 
-
     if (
         text === null ||
         text === undefined
@@ -2114,7 +2066,6 @@ function escapeHTML(text) {
         return "";
 
     }
-
 
 
     return String(text)
@@ -2153,22 +2104,15 @@ function escapeHTML(text) {
 
 function toggleTheme() {
 
-
     document.body
         .classList
-        .toggle(
-            "dark-mode"
-        );
-
+        .toggle("dark-mode");
 
 
     const isDark =
         document.body
             .classList
-            .contains(
-                "dark-mode"
-            );
-
+            .contains("dark-mode");
 
 
     localStorage.setItem(
@@ -2187,24 +2131,24 @@ function toggleTheme() {
 
 function loadTheme() {
 
-
     const savedTheme =
         localStorage.getItem(
             "taskBloomTheme"
         );
 
 
-
-    if (
-        savedTheme ===
-        "dark"
-    ) {
+    if (savedTheme === "dark") {
 
         document.body
             .classList
-            .add(
-                "dark-mode"
-            );
+            .add("dark-mode");
+
+    }
+    else {
+
+        document.body
+            .classList
+            .remove("dark-mode");
 
     }
 
@@ -2212,49 +2156,47 @@ function loadTheme() {
 
 
 /* ==================================================
-   CLOSE MODAL WHEN CLICKING OUTSIDE
+   RESET PASSWORD RULES
 ================================================== */
 
-document.addEventListener(
-    "click",
-    function (event) {
+function resetPasswordRules() {
+
+    updatePasswordRule(
+        "lengthRule",
+        false,
+        "At least 8 characters"
+    );
 
 
-        const modal =
-            document.getElementById(
-                "taskModal"
-            );
+    updatePasswordRule(
+        "uppercaseRule",
+        false,
+        "At least 1 uppercase letter"
+    );
 
 
-        if (
-            event.target ===
-            modal
-        ) {
-
-            closeTaskModal();
-
-        }
-
-    }
-);
+    updatePasswordRule(
+        "lowercaseRule",
+        false,
+        "At least 1 lowercase letter"
+    );
 
 
-/* ==================================================
-   INITIAL APPLICATION LOAD
-================================================== */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+    updatePasswordRule(
+        "symbolRule",
+        false,
+        "At least 1 special symbol"
+    );
 
 
-        loadTheme();
+    updatePasswordRule(
+        "passwordMatchRule",
+        false,
+        "Passwords must match"
+    );
 
+}
 
-        checkLogin();
-
-    }
-);
 
 /* ==================================================
    PASSWORD REQUIREMENTS
@@ -2267,32 +2209,33 @@ function checkPasswordRequirements() {
             .getElementById("signupPassword")
             .value;
 
+
     const confirmPassword =
         document
             .getElementById("signupConfirmPassword")
             .value;
 
 
-    /* ---------- RULES ---------- */
-
     const hasLength =
         password.length >= 8;
+
 
     const hasUppercase =
         /[A-Z]/.test(password);
 
+
     const hasLowercase =
         /[a-z]/.test(password);
 
+
     const hasSymbol =
         /[^A-Za-z0-9]/.test(password);
+
 
     const passwordsMatch =
         password.length > 0 &&
         password === confirmPassword;
 
-
-    /* ---------- UPDATE UI ---------- */
 
     updatePasswordRule(
         "lengthRule",
@@ -2357,14 +2300,17 @@ function updatePasswordRule(
         element.textContent =
             "✓ " + text;
 
+
         element.classList.add(
             "valid"
         );
 
-    } else {
+    }
+    else {
 
         element.textContent =
             "○ " + text;
+
 
         element.classList.remove(
             "valid"
@@ -2376,17 +2322,52 @@ function updatePasswordRule(
 
 
 /* ==================================================
-   PASSWORD LIVE CHECK
+   CLOSE MODAL WHEN CLICKING OUTSIDE
+================================================== */
+
+document.addEventListener(
+    "click",
+    function (event) {
+
+        const modal =
+            document.getElementById(
+                "taskModal"
+            );
+
+
+        if (
+            modal &&
+            event.target === modal
+        ) {
+
+            closeTaskModal();
+
+        }
+
+    }
+);
+
+
+/* ==================================================
+   DOM CONTENT LOADED
 ================================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
+        /* Load saved theme */
+
+        loadTheme();
+
+
+        /* Password live validation */
+
         const password =
             document.getElementById(
                 "signupPassword"
             );
+
 
         const confirmPassword =
             document.getElementById(
@@ -2413,6 +2394,38 @@ document.addEventListener(
 
         }
 
+
+        /*
+           IMPORTANT:
+           Start with a completely clean
+           authentication screen.
+        */
+
+        clearLoginForm();
+
+        clearSignupForm();
+
+
+        /* Always show Login first */
+
+        document
+            .getElementById("signupPage")
+            .classList
+            .add("hidden");
+
+
+        document
+            .getElementById("loginPage")
+            .classList
+            .remove("hidden");
+
+
+        /*
+           Check whether a real Flask
+           session already exists.
+        */
+
+        checkLogin();
+
     }
 );
-document.body.classList.toggle("dark-mode");
